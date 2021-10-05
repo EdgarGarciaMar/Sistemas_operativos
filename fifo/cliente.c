@@ -9,7 +9,7 @@
 int fd;
 int buf[10000];
 char bufc[10000];
-int personas;
+int personas, Confirmacion;
 
 void piper(int fd) //Recepcion de asientos
 {
@@ -60,14 +60,24 @@ void piperc(int fd) //Pipe de confirmacion
 
     read(fd, bufc, sizeof(bufc));
 
-    printf("\nEstatus: %s\n",bufc);
+    printf("\nEstatus: %s\n", bufc);
 
     close(fd);
 }
 
-int main(void)
+void pipemenu(int Confirmacion)
 {
+    mkfifo("/tmp/mi_fifo", 0666);
 
+    fd = open("/tmp/mi_fifo", O_WRONLY);
+
+    write(fd, &Confirmacion, sizeof(int));
+
+    close(fd);
+}
+
+void menu()
+{
     //Impresion en consola
     printf("\n\t***Aeropuerto Internacional de la Ciudad de Mexico***\n");
     printf("\n\t***Reservas de vuelos***\n");
@@ -88,17 +98,37 @@ int main(void)
     piper(fd);
     printf("\n");
 
-    //Tuberia de reserva de asientos
-    printf("Indique el numero de personas para el vuelo:\n");
-    scanf("%d", &personas);
-    for (int i = 0; i < personas; i++)
-    {
-        printf("Asiento del Pasajero %d:\n", i);
-        scanf("%d", &buf[i]);
-    }
-    pipew(fd, buf);
+    //Confirmacion de vuelos
+    printf("\nPor favor confirme si desea adquirir los boletos (1) para si (2) para no\n");
+    scanf("%d", &Confirmacion);
 
-    //Tuberia de confirmacion
-    piperc(fd);
+    //pipe de menu de confirmacion
+    pipemenu(Confirmacion);
+
+    if (Confirmacion == 1)
+    {
+
+        //Tuberia de reserva de asientos
+        printf("Indique el numero de personas para el vuelo:\n");
+        scanf("%d", &personas);
+        for (int i = 0; i < personas; i++)
+        {
+            printf("Asiento del Pasajero %d:\n", i);
+            scanf("%d", &buf[i]);
+        }
+        pipew(fd, buf);
+
+        //Tuberia de confirmacion
+        piperc(fd);
+    }
+    else
+    {
+        menu();
+    }
+}
+
+int main(void)
+{
+    menu();
     return 0;
 }

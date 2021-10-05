@@ -19,6 +19,7 @@ char bufres[] = "1,2,3,4,5";
 char confirm[] = "Vuelo y asientos reservados correctamente";
 char asientooc[] = "El asiento esta ocupado";
 char vuelolleno[] = "El vuelo esta lleno";
+int bufc, N_vuelo = 0;
 
 int binarySearch(int arr[], int l, int r, int x)
 {
@@ -60,12 +61,15 @@ void piper(int fd) //lectura de vuelo
     {
     case 1:
         printf("\n1: Vuelo a Cancun, viaje redondo\n");
+        N_vuelo = 1;
         break;
     case 2:
         printf("\n2: Vuelo a Yucatan, viaje redondo\n");
+        N_vuelo = 2;
         break;
     case 3:
         printf("\n3: Vuelo a Sinaloa, viaje redondo\n");
+        N_vuelo = 3;
         break;
     default:
         printf("\nError en vuelo\n");
@@ -90,10 +94,6 @@ void pipera(int fd) //Lectura de la reserva de asientos el 5 es el tamaño de lo
         {
             printf("Asiento del Cliente: %d\n", reserva[i]);
         }
-        else
-        {
-            printf("\nError en el asiento\n");
-        }
     }
     //printf("Bites : %d\n", n);
     for (int i = 0; i < 5; i++)
@@ -112,7 +112,7 @@ void pipewc(int fd) //Pipe de confirmacion
 
     write(fd, confirm, sizeof(confirm));
 
-    printf("%s\n",confirm);
+    //printf("%s\n", confirm);
 
     close(fd);
 }
@@ -129,6 +129,17 @@ void pipew(int fd, int buf[]) //Pipe de envio de asientos
     }
 
     close(fd);
+}
+
+void pipemenur(int fd)
+{
+    int n;
+    fd = open("/tmp/mi_fifo", O_RDONLY);
+
+    n = read(fd, &bufc, sizeof(int));
+
+    //printf("Bites : %d\n", n);
+    printf("Confirmacion: %d\n", bufc);
 }
 
 int main(void)
@@ -151,8 +162,12 @@ int main(void)
 
             piper(fd);           //tuberia de lectura de vuelo
             pipew(fd, asientos); //tuberia de envio de asientos disponibles
-            pipera(fd);          //tuberia de reserva de asientos
-            pipewc(fd);          //Tuberia de confirmacion
+            pipemenur(fd);       //Tuberia de confirmacion de compra de vuelos
+            if (bufc == 1)
+            {
+                pipera(fd); //tuberia de reserva de asientos
+                pipewc(fd); //Tuberia de confirmacion
+            }
             sleep(10);
             //exit(0);
         }
