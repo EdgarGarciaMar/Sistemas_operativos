@@ -8,7 +8,7 @@ int main(void)
 {
     //Variables del main
     int fd;
-    char buf[] = "Pipe";
+    char buf[10000];
 
     //Impresion en consola
     printf("\n\t***Aeropuerto Internacional de la Ciudad de Mexico***\n");
