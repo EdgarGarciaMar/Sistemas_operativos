@@ -3,12 +3,70 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <string.h>
+
+//Variables globales
+int fd;
+int buf[10000];
+char bufc[10000];
+int personas;
+
+void piper(int fd) //Recepcion de asientos
+{
+    //int buf[10000];
+    int n;
+    fd = open("/tmp/mi_fifo", O_RDONLY);
+
+    for (int i = 0; i < 5; i++)
+    {
+        n = read(fd, &buf[i], sizeof(int));
+        printf("Asiento: %d\n", buf[i]);
+    };
+
+    //printf("Bites : %d\n", n);
+
+    close(fd);
+}
+
+void pipew(int fd, int buf[]) //Tuberia de asignacion de asientos
+{
+    mkfifo("/tmp/mi_fifo", 0666);
+
+    fd = open("/tmp/mi_fifo", O_WRONLY);
+
+    for (int i = 0; i < personas; i++)
+    {
+        write(fd, &buf[i], sizeof(int));
+    }
+
+    close(fd);
+}
+
+void pipewv(int fd, int buf[]) //vuelos
+{
+    mkfifo("/tmp/mi_fifo", 0666);
+
+    fd = open("/tmp/mi_fifo", O_WRONLY);
+
+    write(fd, &buf[0], sizeof(int));
+
+    close(fd);
+}
+
+void piperc(int fd) //Pipe de confirmacion
+{
+
+    fd = open("/tmp/mi_fifo", O_RDONLY);
+
+    read(fd, bufc, sizeof(bufc));
+
+    printf("\nEstatus: %s\n",bufc);
+
+    close(fd);
+}
 
 int main(void)
 {
-    //Variables del main
-    int fd;
-    char buf[10000];
 
     //Impresion en consola
     printf("\n\t***Aeropuerto Internacional de la Ciudad de Mexico***\n");
@@ -20,15 +78,27 @@ int main(void)
     printf("\nSeleccione su reservacion al introducir el numero:\n");
     printf("\n Ejemplo: 1\n");
     printf("Seleccion:\n");
-    scanf("%s", &buf);
+    scanf("%d", &buf[0]);
 
-    //Tuberia
-    mkfifo("/tmp/mi_fifo", 0666);
+    //Tuberia de seleccion de vuelo
+    pipewv(fd, buf);
 
-    fd = open("/tmp/mi_fifo", O_WRONLY);
+    //Tuberia de recepcion de asientos
+    printf("\nLos asientos disponibles son:\n");
+    piper(fd);
+    printf("\n");
 
-    write(fd, buf, sizeof(buf));
+    //Tuberia de reserva de asientos
+    printf("Indique el numero de personas para el vuelo:\n");
+    scanf("%d", &personas);
+    for (int i = 0; i < personas; i++)
+    {
+        printf("Asiento del Pasajero %d:\n", i);
+        scanf("%d", &buf[i]);
+    }
+    pipew(fd, buf);
 
-    close(fd);
+    //Tuberia de confirmacion
+    piperc(fd);
     return 0;
 }
