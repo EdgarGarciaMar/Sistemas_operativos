@@ -197,7 +197,7 @@ int main(void)
                 }
                 pipewc(fd); //Tuberia de confirmacion
             }
-            sleep(10);
+            //sleep(10);
             //exit(0);
         }
         else

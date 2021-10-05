@@ -85,11 +85,15 @@ void menu()
     printf("\n1: Vuelo a Cancun, viaje redondo");
     printf("\n2: Vuelo a Yucatan, viaje redondo");
     printf("\n3: Vuelo a Sinaloa, viaje redondo");
+    printf("\n4: Salir");
     printf("\nSeleccione su reservacion al introducir el numero:\n");
     printf("\n Ejemplo: 1\n");
     printf("Seleccion:\n");
     scanf("%d", &buf[0]);
-
+    if (buf[0] == 4)
+    {
+        exit(0);
+    }
     //Tuberia de seleccion de vuelo
     pipewv(fd, buf);
 
