@@ -15,6 +15,8 @@
 int fd = -1;
 pid_t pid;
 int asientos[] = {1, 2, 3, 4, 5};
+int asientos2[] = {1, 2, 3, 4, 5};
+int asientos3[] = {1, 2, 3, 4, 5};
 char bufres[] = "1,2,3,4,5";
 char confirm[] = "Vuelo y asientos reservados correctamente";
 char asientooc[] = "El asiento esta ocupado";
@@ -79,7 +81,7 @@ void piper(int fd) //lectura de vuelo
     close(fd);
 }
 
-void pipera(int fd) //Lectura de la reserva de asientos el 5 es el tamaño de los asientos
+void pipera(int fd, int asientos[]) //Lectura de la reserva de asientos el 5 es el tamaño de los asientos
 {
     int buf[10000];
     int reserva[10000];
@@ -160,12 +162,39 @@ int main(void)
             printf("\nMi identificador es: %d\n", getpid());
             printf("\nMi proceso padre es: %d\n", getppid());
 
-            piper(fd);           //tuberia de lectura de vuelo
-            pipew(fd, asientos); //tuberia de envio de asientos disponibles
-            pipemenur(fd);       //Tuberia de confirmacion de compra de vuelos
+            piper(fd); //tuberia de lectura de vuelo
+            if (N_vuelo == 1)
+            {
+                pipew(fd, asientos); //tuberia de envio de asientos disponibles
+                printf("\n1N_vuelo\n");
+            }
+            if (N_vuelo == 2)
+            {
+                pipew(fd, asientos2); //tuberia de envio de asientos disponibles
+                printf("\n2N_vuelo\n");
+            }
+            if (N_vuelo == 3)
+            {
+                pipew(fd, asientos3); //tuberia de envio de asientos disponibles
+                printf("\n3N_vuelo\n");
+            }
+
+            pipemenur(fd); //Tuberia de confirmacion de compra de vuelos
             if (bufc == 1)
             {
-                pipera(fd); //tuberia de reserva de asientos
+                //pipera(fd); //tuberia de reserva de asientos
+                if (N_vuelo == 1)
+                {
+                    pipera(fd, asientos); //tuberia de envio de asientos disponibles
+                }
+                if (N_vuelo == 2)
+                {
+                    pipera(fd, asientos2); //tuberia de envio de asientos disponibles
+                }
+                if (N_vuelo == 3)
+                {
+                    pipera(fd, asientos3); //tuberia de envio de asientos disponibles
+                }
                 pipewc(fd); //Tuberia de confirmacion
             }
             sleep(10);
