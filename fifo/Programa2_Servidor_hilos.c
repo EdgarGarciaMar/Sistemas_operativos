@@ -19,7 +19,7 @@ char confirm[] = "Vuelo y asientos reservados correctamente";
 char asientooc[] = "El asiento esta ocupado";
 char vuelolleno[] = "El vuelo esta lleno";
 int bufc, N_vuelo = 0;
-int *thread;
+pthread_t thread;
 
 int binarySearch(int arr[], int l, int r, int x)
 {
@@ -142,9 +142,9 @@ void pipemenur(int fd)
     printf("Confirmacion: %d\n", bufc);
 }
 
-void *Codigo_Hilo1(void *id)
+void *Codigo_Hilo1()
 {
-    int n_thread = (int)id;
+
     piper(fd); //tuberia de lectura de vuelo
     if (N_vuelo == 1)
     {
@@ -185,15 +185,21 @@ void *Codigo_Hilo1(void *id)
 
 int main(void)
 {
+    //gcc Programa2_Servidor_hilos.c -o servidorhilos -lpthread compirlar
+
     while (fd == -1)
     {
-        
-        thread = malloc(sizeof(pthread_t));
-        if (pthread_create(thread[0], NULL, Codigo_Hilo1, (void *)id) != 0)
+        int estado = pthread_create(&thread, NULL, Codigo_Hilo1, NULL);
+        if (estado != 0)
         {
-            perror("El thread no pudo crearse");
+            perror("\nEl thread no pudo crearse\n");
             exit(-1);
         }
+        else
+        {
+            printf("\nHilo creado \n");
+        }
+        sleep(15);
     }
 
     return 0;
