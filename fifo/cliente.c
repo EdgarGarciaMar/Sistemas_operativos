@@ -11,7 +11,7 @@ int buf[10000];
 char bufc[10000];
 int personas, Confirmacion;
 
-void piper(int fd) //Recepcion de asientos
+void piper(int fd) //Recepción de asientos
 {
     //int buf[10000];
     int n;
@@ -28,7 +28,7 @@ void piper(int fd) //Recepcion de asientos
     close(fd);
 }
 
-void pipew(int fd, int buf[]) //Tuberia de asignacion de asientos
+void pipew(int fd, int buf[]) //Tubería de asignación de asientos
 {
     mkfifo("/tmp/mi_fifo", 0666);
 
@@ -53,7 +53,7 @@ void pipewv(int fd, int buf[]) //vuelos
     close(fd);
 }
 
-void piperc(int fd) //Pipe de confirmacion
+void piperc(int fd) //Pipe de confirmación
 {
 
     fd = open("/tmp/mi_fifo", O_RDONLY);
@@ -76,9 +76,22 @@ void pipemenu(int Confirmacion)
     close(fd);
 }
 
+void PIPE_CONEXION(int conexion)
+{
+    mkfifo("/tmp/mi_fifo", 0666);
+
+    fd = open("/tmp/mi_fifo", O_WRONLY);
+
+    write(fd, &conexion, sizeof(int));
+
+    close(fd);
+}
+
 void menu()
 {
-    //Impresion en consola
+    //Tubería de conexión con server
+    PIPE_CONEXION(1);
+    //Impresión en consola
     printf("\n\t***Aeropuerto Internacional de la Ciudad de Mexico***\n");
     printf("\n\t***Reservas de vuelos***\n");
     printf("\nOpciones:");
@@ -94,25 +107,25 @@ void menu()
     {
         exit(0);
     }
-    //Tuberia de seleccion de vuelo
+    //Tubería de selección de vuelo
     pipewv(fd, buf);
 
-    //Tuberia de recepcion de asientos
+    //Tubería de recepción de asientos
     printf("\nLos asientos disponibles son:\n");
     piper(fd);
     printf("\n");
 
-    //Confirmacion de vuelos
+    //Confirmación de vuelos
     printf("\nPor favor confirme si desea adquirir los boletos (1) para si (2) para no\n");
     scanf("%d", &Confirmacion);
 
-    //pipe de menu de confirmacion
+    //pipe de menu de confirmación
     pipemenu(Confirmacion);
 
     if (Confirmacion == 1)
     {
 
-        //Tuberia de reserva de asientos
+        //Tubería de reserva de asientos
         printf("Indique el numero de personas para el vuelo:\n");
         scanf("%d", &personas);
         for (int i = 0; i < personas; i++)
@@ -122,7 +135,7 @@ void menu()
         }
         pipew(fd, buf);
 
-        //Tuberia de confirmacion
+        //Tubería de confirmación de estatus de la reserva
         piperc(fd);
     }
     else

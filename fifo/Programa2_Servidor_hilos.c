@@ -7,19 +7,19 @@
 #include <string.h>
 //Hilos
 #include <pthread.h>
+//Semaforo
+#include <semaphore.h>
 
 //Variables globales
 int fd = -1;
-pid_t pid;
 int asientos[] = {1, 2, 3, 4, 5};
 int asientos2[] = {1, 2, 3, 4, 5};
 int asientos3[] = {1, 2, 3, 4, 5};
-char bufres[] = "1,2,3,4,5";
 char confirm[] = "Vuelo y asientos reservados correctamente";
-char asientooc[] = "El asiento esta ocupado";
-char vuelolleno[] = "El vuelo esta lleno";
 int bufc, N_vuelo = 0;
+int buf[10];
 pthread_t thread;
+sem_t semaforo;
 
 int binarySearch(int arr[], int l, int r, int x)
 {
@@ -49,13 +49,11 @@ int binarySearch(int arr[], int l, int r, int x)
 
 void piper(int fd) //lectura de vuelo
 {
-    int buf[10000];
-    int n;
+
     fd = open("/tmp/mi_fifo", O_RDONLY);
 
-    n = read(fd, &buf[0], sizeof(int));
+    read(fd, &buf[0], sizeof(int));
 
-    //printf("Bites : %d\n", n);
     printf("Cliente: %d\n", buf[0]);
     switch (buf[0])
     {
@@ -81,13 +79,11 @@ void piper(int fd) //lectura de vuelo
 
 void pipera(int fd, int asientos[]) //Lectura de la reserva de asientos el 5 es el tamaño de los asientos
 {
-    int buf[10000];
-    int reserva[10000];
-    int n;
+    int reserva[5];
     fd = open("/tmp/mi_fifo", O_RDONLY);
     for (int i = 0; i < 5; i++)
     {
-        n = read(fd, &buf[i], sizeof(int));
+        read(fd, &buf[i], sizeof(int));
         //printf("Asiento del Cliente: %d\n", buf[i]);
         reserva[i] = binarySearch(asientos, 0, 5, buf[i]);
         if (reserva[i] != -1)
@@ -95,7 +91,7 @@ void pipera(int fd, int asientos[]) //Lectura de la reserva de asientos el 5 es 
             printf("Asiento del Cliente: %d\n", reserva[i]);
         }
     }
-    //printf("Bites : %d\n", n);
+    
     for (int i = 0; i < 5; i++)
     {
         printf("\nAsiento disponible %d\n", asientos[i]);
@@ -104,7 +100,7 @@ void pipera(int fd, int asientos[]) //Lectura de la reserva de asientos el 5 es 
     close(fd);
 }
 
-void pipewc(int fd) //Pipe de confirmacion
+void pipewc(int fd) //Pipe de confirmación que indica el estatus de la reserva
 {
     mkfifo("/tmp/mi_fifo", 0666);
 
@@ -117,7 +113,7 @@ void pipewc(int fd) //Pipe de confirmacion
     close(fd);
 }
 
-void pipew(int fd, int buf[]) //Pipe de envio de asientos
+void pipew(int fd, int buf[]) //Pipe de envío de asientos
 {
     mkfifo("/tmp/mi_fifo", 0666);
 
@@ -144,51 +140,72 @@ void pipemenur(int fd)
 
 void *Codigo_Hilo1()
 {
-
-    piper(fd); //tuberia de lectura de vuelo
-    if (N_vuelo == 1)
+    while (1)
     {
-        pipew(fd, asientos); //tuberia de envio de asientos disponibles
-        printf("\n1N_vuelo\n");
-    }
-    if (N_vuelo == 2)
-    {
-        pipew(fd, asientos2); //tuberia de envio de asientos disponibles
-        printf("\n2N_vuelo\n");
-    }
-    if (N_vuelo == 3)
-    {
-        pipew(fd, asientos3); //tuberia de envio de asientos disponibles
-        printf("\n3N_vuelo\n");
-    }
-
-    pipemenur(fd); //Tuberia de confirmacion de compra de vuelos
-    if (bufc == 1)
-    {
-        //pipera(fd); //tuberia de reserva de asientos
+        piper(fd); //tubería de lectura de vuelo
         if (N_vuelo == 1)
         {
-            pipera(fd, asientos); //tuberia de envio de asientos disponibles
+            pipew(fd, asientos); //tubería de envío de asientos disponibles
+            printf("\n1N_vuelo\n");
         }
         if (N_vuelo == 2)
         {
-            pipera(fd, asientos2); //tuberia de envio de asientos disponibles
+            pipew(fd, asientos2); //tubería de envío de asientos disponibles
+            printf("\n2N_vuelo\n");
         }
         if (N_vuelo == 3)
         {
-            pipera(fd, asientos3); //tuberia de envio de asientos disponibles
+            pipew(fd, asientos3); //tubería de envío de asientos disponibles
+            printf("\n3N_vuelo\n");
         }
-        pipewc(fd); //Tuberia de confirmacion
+
+        pipemenur(fd); //Tubería de confirmación de compra de vuelos
+        if (bufc == 1)
+        {
+            //pipera(fd); //tubería de reserva de asientos
+            if (N_vuelo == 1)
+            {
+                sem_wait(&semaforo);  //Semaforo que da orden a las reservas de multiples clientes
+                pipera(fd, asientos); //tubería de reserva de asientos
+                break;
+            }
+            if (N_vuelo == 2)
+            {
+                sem_wait(&semaforo);   //Semaforo que da orden a las reservas de multiples clientes
+                pipera(fd, asientos2); //tubería de reserva de asientos
+                break;
+            }
+            if (N_vuelo == 3)
+            {
+                sem_wait(&semaforo);   //Semaforo que da orden a las reservas de multiples clientes
+                pipera(fd, asientos3); //tubería de reserva de asientos
+                break;
+            }
+            //pipewc(fd); //Tubería de confirmación
+        }
     }
+    pipewc(fd);          //Tubería de confirmación
+    sem_post(&semaforo); //Cuando se termine la operacion de reserva estara disponible para otro hilo
     pthread_exit(NULL);
 }
+void PIPE_CONEXION(int fd)
+{
+    int conexion;
+    fd = open("/tmp/mi_fifo", O_RDONLY);
 
+    read(fd, &conexion, sizeof(int));
+
+    close(fd);
+}
 int main(void)
 {
-    //gcc Programa2_Servidor_hilos.c -o servidorhilos -lpthread compirlar
-
-    while (fd == -1)
+    //gcc Programa2_Servidor_hilos.c -o servidorhilos -lpthread compilar
+    sem_init(&semaforo, 0, 1); //Semaforo se inicializa en 1
+    while (1)
     {
+        //Tubería de conexión
+        printf("\nEsperando conexion.... \n");
+        PIPE_CONEXION(fd);
         int estado = pthread_create(&thread, NULL, Codigo_Hilo1, NULL);
         if (estado != 0)
         {
@@ -197,9 +214,9 @@ int main(void)
         }
         else
         {
-            printf("\nHilo creado \n");
+            printf("\nHilo creado, Conexion establecida \n");
         }
-        sleep(15);
+        sleep(10);
     }
 
     return 0;
