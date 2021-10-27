@@ -50,29 +50,27 @@ void inicioSesion()
     switch (login)
     {
     case 1:
-         proveedor = inicioProveedor();
+        proveedor = inicioProveedor();
         if (proveedor == -1)
         {
-            while (1)
+
+            //Informe del error
+            printf("**ID o contrasena incorrecta**\n");
+            printf("Seleccione una de las siguientes opciones:\n");
+            printf("1: Volver a digitar ID y contrasena desde el menu principal\n");
+            printf("2: crear una cuenta\n");
+            scanf("%d", &opcErrorContrasena);
+            switch (opcErrorContrasena)
             {
-                //Informe del error
-                printf("**ID o contrasena incorrecta**\n");
-                printf("Seleccione una de las siguientes opciones:\n");
-                printf("1: Volver a digitar ID y contrasena desde el menu principal\n");
-                printf("2: crear una cuenta\n");
-                scanf("%d", &opcErrorContrasena);
-                switch (opcErrorContrasena)
-                {
-                case 1:
-                    inicioSesion();
-                    break;
-                case 2:
-                    crearCuenta();
-                default:
-                    printf("opcion invalida, volviendo al menu\n");
-                    inicioSesion();
-                    break;
-                }
+            case 1:
+                inicioSesion();
+                break;
+            case 2:
+                crearCuenta();
+            default:
+                printf("opcion invalida, volviendo al menu\n");
+                inicioSesion();
+                break;
             }
         }
         else
@@ -82,31 +80,30 @@ void inicioSesion()
 
         break;
     case 2:
-         cliente = inicioCliente();
+        cliente = inicioCliente();
         if (cliente == -1)
         {
-            while (1)
+
+            //Informe del error
+            printf("**ID o contrasena incorrecta**\n");
+            printf("Seleccione una de las siguientes opciones:\n");
+            printf("1: Volver a digitar ID y contrasena desde el menu principal\n");
+            printf("2: crear una cuenta\n");
+            scanf("%d", &opcErrorContrasena);
+            switch (opcErrorContrasena)
             {
-                //Informe del error
-                printf("**ID o contrasena incorrecta**\n");
-                printf("Seleccione una de las siguientes opciones:\n");
-                printf("1: Volver a digitar ID y contrasena desde el menu principal\n");
-                printf("2: crear una cuenta\n");
-                scanf("%d", &opcErrorContrasena);
-                switch (opcErrorContrasena)
-                {
-                case 1:
-                    inicioSesion();
-                    break;
-                case 2:
-                    crearCuenta();
-                default:
-                    printf("opcion invalida, volviendo al menu\n");
-                    inicioSesion();
-                    break;
-                }
+            case 1:
+                inicioSesion();
+                break;
+            case 2:
+                crearCuenta();
+            default:
+                printf("opcion invalida, volviendo al menu\n");
+                inicioSesion();
+                break;
             }
         }
+
         else
         {
             opcionesCliente();
