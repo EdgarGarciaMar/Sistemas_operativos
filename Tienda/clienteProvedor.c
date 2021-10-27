@@ -1,33 +1,95 @@
+//Generales y fifo
+#include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <string.h>
+#include <time.h>
+//Variables globales
+int fd;
+char contrasena[5];
+int respuesta = 0;
+int id = 0;
+
+//Tuberia de conexion, con esta funcion pedimos acceso al servidor
+int PIPE_CONEXION(int conexion)
+{
+    printf("Escribe la contrasena de 5 carateres:\n");
+    scanf("%s", contrasena);
+
+    mkfifo("/tmp/mi_fifo", 0666);
+
+    fd = open("/tmp/mi_fifo", O_WRONLY);
+
+    write(fd, &contrasena, sizeof(contrasena));
+
+    close(fd);
+
+    //Recepción de la confirmación de la contraseña
+
+    fd = open("/tmp/mi_fifo", O_RDONLY);
+
+    read(fd, &respuesta, sizeof(int));
+
+    close(fd);
+
+    if (respuesta == 0)
+    {
+        //Envio de ID, porque la contraseña es correcta
+        srand(time(NULL));
+        id = rand() % 1100;
+
+        mkfifo("/tmp/mi_fifo", 0666);
+
+        fd = open("/tmp/mi_fifo", O_WRONLY);
+
+        write(fd, &id, sizeof(int));
+
+        close(fd);
+
+        printf("ID de esta sesion: %d\n", id);
+    }
+    else{
+        respuesta=-1;
+    }
+    return respuesta;
+}
 
 //login del proverdor, verifica su contraseña y su id y si son incorrectas niega el acceso
 int inicioProveedor()
 {
+    printf("Conectando con el servidor....\n");
+    int con = PIPE_CONEXION(fd);
 
-    return -1;
+    return con;
 }
 
 //login del cliente, verifica su contraseña y su id y si son incorrectas niega el acceso
 int inicioCliente()
 {
+    printf("Conectando con el servidor....\n");
+    int con = PIPE_CONEXION(fd);
 
-    return -1;
+    return con;
 }
 
 //Función de creacion de cuenta para cliente y proveedor
 void crearCuenta()
 {
+    printf("Hola soy crear cuenta\n");
 }
 
 //Acciones de Agregar artículo, Agregar existencia, Búsqueda del artículo
 void opcionesProvedor()
 {
+    printf("Hola soy opciones de provedor\n");
 }
 
 //Acciones de solicitar carrito, agregar carrito
 void opcionesCliente()
 {
+    printf("Hola soy opciones de cliente\n");
 }
 
 void inicioSesion()
