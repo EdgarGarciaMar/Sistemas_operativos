@@ -24,7 +24,7 @@ int PIPE_CONEXION(int conexion)
 
     write(fd, &contrasena, sizeof(contrasena));
 
-    close(fd);
+    close(fd); //duda, de sino cerrar la conexion
 
     //Recepción de la confirmación de la contraseña
 
@@ -50,8 +50,9 @@ int PIPE_CONEXION(int conexion)
 
         printf("ID de esta sesion: %d\n", id);
     }
-    else{
-        respuesta=-1;
+    else
+    {
+        respuesta = -1;
     }
     return respuesta;
 }
@@ -77,19 +78,65 @@ int inicioCliente()
 //Función de creacion de cuenta para cliente y proveedor
 void crearCuenta()
 {
-    printf("Hola soy crear cuenta\n");
+    int id_nuevo;
+    char nombre[20];
+    printf("Ingresa tu nombre de no mas de 20 caracteres\n");
+    scanf("%s",nombre);
+    srand(time(NULL));
+    id_nuevo = rand() % 1100;
 }
 
 //Acciones de Agregar artículo, Agregar existencia, Búsqueda del artículo
 void opcionesProvedor()
 {
-    printf("Hola soy opciones de provedor\n");
+    int opcionProveerdor;
+
+    printf("+Selecciona 1 de las siguientes opciones:\n");
+    printf("1: Busqueda de articulo\n");
+    printf("2: Agregar articulo\n");
+    printf("3: Agregar Existencia\n");
+    scanf("%d", &opcionProveerdor);
+
+    switch (opcionProveerdor)
+    {
+    case 1:
+        /* pedirle al provedor el nombre del articulo o id y enviar al servidor */
+        break;
+    case 2:
+        /*pedirle al provedor el nombre del articulo o id, enviar al servidor y que el servidor cree el articulo*/
+        break;
+    case 3:
+        /*pedirle al provedor el nombre del articulo o id, el numero de unidades a agregar y enviar al servidor*/
+        break;
+    default:
+        printf("No seleccionaste ninguna opcion del menu, regresando a inicio...\n");
+        //inicioSesion();
+        break;
+    }
 }
 
 //Acciones de solicitar carrito, agregar carrito
 void opcionesCliente()
 {
-    printf("Hola soy opciones de cliente\n");
+    int opcionCliente;
+
+    printf("+Selecciona 1 de las siguientes opciones:\n");
+    printf("1: Solicitar Carrito\n");
+    printf("2: Guaradr carrito\n");
+    scanf("%d", &opcionCliente);
+    switch (opcionCliente)
+    {
+    case 1:
+        /* Solicitar un carrito, abrir la comunicacion y comenzar a comprar */
+        break;
+    case 2:
+        /*guardas el caririto*/
+        break;
+    default:
+        printf("No seleccionaste ninguna opcion del menu, regresando a inicio...\n");
+        //inicioSesion();
+        break;
+    }
 }
 
 void inicioSesion()
