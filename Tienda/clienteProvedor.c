@@ -9,22 +9,39 @@
 //Variables globales
 int fd;
 char contrasena[5];
+int usuario=0;
 int respuesta = 0;
 int id = 0;
 
 //Tuberia de conexion, con esta funcion pedimos acceso al servidor
-int PIPE_CONEXION(int conexion)
+int PIPE_CONEXION(int conexion, int identificador)
 {
+    printf("Escribe Escribe tu ID Ejemplo: 1 :\n");
+    scanf("%d", &usuario);
     printf("Escribe la contrasena de 5 carateres:\n");
     scanf("%s", contrasena);
 
+    //envio de usuario
     mkfifo("/tmp/mi_fifo", 0666);
 
     fd = open("/tmp/mi_fifo", O_WRONLY);
 
+    write(fd, &usuario, sizeof(int));
+
+    //printf("\nUsuario: %d", usuario);
+
+   // close(fd);
+
+    //envio de contrasena
+   // mkfifo("/tmp/mi_fifo", 0666);
+
+   // fd = open("/tmp/mi_fifo", O_WRONLY);
+
     write(fd, &contrasena, sizeof(contrasena));
 
-    close(fd); //duda, de sino cerrar la conexion
+    //printf("\nContra: %s", contrasena);
+
+    close(fd);
 
     //Recepción de la confirmación de la contraseña
 
@@ -33,6 +50,8 @@ int PIPE_CONEXION(int conexion)
     read(fd, &respuesta, sizeof(int));
 
     close(fd);
+
+    printf("respuesta=%d",respuesta);
 
     if (respuesta == 0)
     {
@@ -45,6 +64,7 @@ int PIPE_CONEXION(int conexion)
         fd = open("/tmp/mi_fifo", O_WRONLY);
 
         write(fd, &id, sizeof(int));
+        write(fd, &identificador, sizeof(int));
 
         close(fd);
 
@@ -61,7 +81,7 @@ int PIPE_CONEXION(int conexion)
 int inicioProveedor()
 {
     printf("Conectando con el servidor....\n");
-    int con = PIPE_CONEXION(fd);
+    int con = PIPE_CONEXION(fd, 1); //1 para proveedor
 
     return con;
 }
@@ -70,7 +90,7 @@ int inicioProveedor()
 int inicioCliente()
 {
     printf("Conectando con el servidor....\n");
-    int con = PIPE_CONEXION(fd);
+    int con = PIPE_CONEXION(fd, 2); //2 para cliente
 
     return con;
 }
@@ -81,7 +101,7 @@ void crearCuenta()
     int id_nuevo;
     char nombre[20];
     printf("Ingresa tu nombre de no mas de 20 caracteres\n");
-    scanf("%s",nombre);
+    scanf("%s", nombre);
     srand(time(NULL));
     id_nuevo = rand() % 1100;
 }

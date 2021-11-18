@@ -10,27 +10,54 @@
 //Semaforo
 #include <semaphore.h>
 
-//variables globales
+//******variables globales******
+//tuberia
 int fd = 0;
+//hilo
 pthread_t thread;
+//semaforo
 sem_t semaforo;
-char conexion[5];
+//variables funcionales
+char conexion[5];     //contra a validar
+int Usuarioadm = 0;   //usuario a validar
+int usuario_provedor; //indicador que habilita opciones para cliente o para proveedor
+//usuario admin
 char contra[] = "12345";
+int usuario = 1;
 int id;
+
+//void *opcionesProvedorServer(void *arg)
+//{
+//}
+int validar_usuario(int usuarioadm, int usuario)
+{
+    int validacion = 0;
+    printf("Validando Datos....\n");
+    if (usuario == usuarioadm)
+    {
+        printf("ok usuario\n");
+    }
+    else
+    {
+        printf("no ok usuario\n");
+        validacion = 1;
+    }
+    return validacion;
+}
 
 int validarContrasena(char conexion[], char contra[])
 {
-    printf("Validando contrasena....\n");
+    printf("Validando Datos....\n");
     int validacion = 0;
     validacion = strcmp(conexion, contra);
 
     if (validacion == 0)
     {
-        printf("Contrasena valida.\n");
+        printf("ok\n");
     }
     else
     {
-        printf("Contrasena incorrecta\n");
+        printf("no ok\n");
     }
     return validacion;
 }
@@ -38,18 +65,36 @@ int validarContrasena(char conexion[], char contra[])
 void PIPE_CONEXION(int fd)
 {
     //Recepción de información del usuario
+    //lectura de usuario
     fd = open("/tmp/mi_fifo", O_RDONLY);
 
+    read(fd, &Usuarioadm, sizeof(Usuarioadm));
+
+    //printf("\nUsuario:%d", Usuarioadm);
+
+    //close(fd);
+
+    //lectura de contra
+   // fd = open("/tmp/mi_fifo", O_RDONLY);
+
     read(fd, &conexion, sizeof(conexion));
+
+   //printf("\nContra:%s", conexion);
 
     close(fd);
 
     //Procesamiento y respuesta de la conexion
+    printf("\nValdando usuario\n");
+    int identificadorConexionUsuario = validar_usuario(Usuarioadm, usuario);
+    printf("\nValdando contra\n");
     int identificadorConexion = validarContrasena(conexion, contra);
 
-    if (identificadorConexion == 0)
+    printf("usuario=%d, contra=%d\n", identificadorConexionUsuario, identificadorConexion);
+
+    if (identificadorConexion == 0 && identificadorConexionUsuario == 0)
     {
         //Le confirmamos al usuario que su contraseña es correcta
+        printf("Entro al if de la validacion, porque ok\n");
         mkfifo("/tmp/mi_fifo", 0666);
 
         fd = open("/tmp/mi_fifo", O_WRONLY);
@@ -62,6 +107,7 @@ void PIPE_CONEXION(int fd)
         fd = open("/tmp/mi_fifo", O_RDONLY);
 
         read(fd, &id, sizeof(int));
+        read(fd, &usuario_provedor, sizeof(int));
 
         close(fd);
 
