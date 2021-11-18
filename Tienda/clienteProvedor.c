@@ -28,18 +28,10 @@ int PIPE_CONEXION(int conexion, int identificador)
 
     write(fd, &usuario, sizeof(int));
 
-    //printf("\nUsuario: %d", usuario);
-
-   // close(fd);
-
     //envio de contrasena
-   // mkfifo("/tmp/mi_fifo", 0666);
-
-   // fd = open("/tmp/mi_fifo", O_WRONLY);
 
     write(fd, &contrasena, sizeof(contrasena));
 
-    //printf("\nContra: %s", contrasena);
 
     close(fd);
 
@@ -51,7 +43,6 @@ int PIPE_CONEXION(int conexion, int identificador)
 
     close(fd);
 
-    printf("respuesta=%d",respuesta);
 
     if (respuesta == 0)
     {

@@ -70,16 +70,9 @@ void PIPE_CONEXION(int fd)
 
     read(fd, &Usuarioadm, sizeof(Usuarioadm));
 
-    //printf("\nUsuario:%d", Usuarioadm);
-
-    //close(fd);
-
     //lectura de contra
-   // fd = open("/tmp/mi_fifo", O_RDONLY);
-
+   
     read(fd, &conexion, sizeof(conexion));
-
-   //printf("\nContra:%s", conexion);
 
     close(fd);
 
@@ -89,12 +82,11 @@ void PIPE_CONEXION(int fd)
     printf("\nValdando contra\n");
     int identificadorConexion = validarContrasena(conexion, contra);
 
-    printf("usuario=%d, contra=%d\n", identificadorConexionUsuario, identificadorConexion);
 
     if (identificadorConexion == 0 && identificadorConexionUsuario == 0)
     {
         //Le confirmamos al usuario que su contraseña es correcta
-        printf("Entro al if de la validacion, porque ok\n");
+        
         mkfifo("/tmp/mi_fifo", 0666);
 
         fd = open("/tmp/mi_fifo", O_WRONLY);
