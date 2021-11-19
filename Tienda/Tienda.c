@@ -71,8 +71,8 @@ void *opcionesProvedorServer()
 
         write(fd, &rsp2, sizeof(rsp2));
         close(fd);
-        printf("Consulta finalizada con exito...\n");
-        exit(0);
+        //printf("Consulta finalizada con exito...\n");
+        //exit(0);
         break;
     case 2: //Agregar Articulo
 
@@ -93,7 +93,7 @@ void *opcionesProvedorServer()
         fputs("\n", producto_p);
 
         fclose(producto_p);
-        printf("Edita el archivo sin permiso.......\n");
+        
         break;
     case 3: //Agregar existencia
         /* code */
@@ -119,50 +119,19 @@ void *opcionesProvedorServer()
         write(fd, &file_contents, sizeof(file_contents));
 
         close(fd);
-
+        //printf("Actualizacion realizada con exito, nuevos datos:\n");
         printf("%s\n", file_contents);
 
         fclose(producto_p);
 
-       /* printf("Espearndo datos nuevos....\n");//todo good
-
-        //Recibimos los datos nuevos
-        fd = open("/tmp/mi_fifo", O_RDONLY);
-        read(fd, &swichopc, sizeof(int));
-        read(fd, &nombre_producto, sizeof(nombre_producto));
-        read(fd, &ID_producto, sizeof(ID_producto));
-        read(fd, &Descripcion, sizeof(Descripcion));
-        close(fd);
-
-        printf("Datos recividos....\n");
-        printf("***%s\n", nombre_producto);
-        printf("**%d\n", ID_producto);
-        printf("*%s\n", Descripcion);
-
-        producto_p = fopen(nombre_producto, "w");
-        if (producto_p == NULL)
-        {
-            printf("Error al abir o crear el archivo del producto.\n");
-            exit(0);
-        }
-
-        sprintf(text, "%d", ID_producto);
-
-        fputs(nombre_producto, producto_p);
-        fputs("\n", producto_p);
-        fputs(text, producto_p);
-        fputs("\n", producto_p);
-        fputs(Descripcion, producto_p);
-        fputs("\n", producto_p);
-
-        fclose(producto_p);
-        exit(0);*/
-        exit(1);
+        
+        //exit(1);
         break;
     }
-
+    //printf("+++Salio..+++");
     sem_post(&semaforo);
     pthread_exit(NULL);
+    //printf("+++No Salio..+++");
 }
 
 void menu_de_opciones(int usuario_provedor)
@@ -301,6 +270,7 @@ void PIPE_CONEXION(int fd)
         printf("El id de la conexion es: %d\n", id);
 
         menu_de_opciones(usuario_provedor); //habilitamos las acciones del server
+        printf("Salio de opc de proveedorrrrrrr");
     }
     else
     {

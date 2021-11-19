@@ -18,6 +18,9 @@ int IDproducto;
 char Descripcion[100];
 char nombre_producto[100];
 char rsp[1000];
+//actualizar
+char text[20];
+FILE *producto_p;
 
 //prototipos
 int PIPE_CONEXION(int conexion, int identificador);
@@ -194,6 +197,28 @@ void opcionesProvedor()
 
         printf("Ingresa el nombre del producto.txt a actualizar:\n");
         scanf("%s", nombre_producto);
+        printf("Ingresa el ID del producto de 3 digitos:\n");
+        scanf("%d", &IDproducto);
+        printf("Ingresa la existencia:\n");
+        scanf("%s", Descripcion);
+
+        producto_p = fopen(nombre_producto, "w");
+        if (producto_p == NULL)
+        {
+            printf("Error al abir o crear el archivo del producto.\n");
+            exit(0);
+        }
+
+        sprintf(text, "%d", IDproducto);
+
+        fputs(nombre_producto, producto_p);
+        fputs("\n", producto_p);
+        fputs(text, producto_p);
+        fputs("\n", producto_p);
+        fputs(Descripcion, producto_p);
+        fputs("\n", producto_p);
+
+        fclose(producto_p);
 
         mkfifo("/tmp/mi_fifo", 0666);
 
@@ -216,32 +241,9 @@ void opcionesProvedor()
         read(fd, &rsp, sizeof(rsp));
         printf("%s", rsp);
         close(fd);
-
         printf("*******************************\n");
-        /*printf("\tConfirma los datos y realiza cambios.\n");
-
-        printf("Confirma o actualiza el nombre del producto.txt:\n");
-        scanf("%s", nombre_producto);
-        printf("Confirma o actualiza el ID del producto de 3 digitos:\n");
-        scanf("%d", &IDproducto);
-        printf("Confirma o actualiza la existencia:\n");
-        scanf("%s", Descripcion);
-
-        //envio de Datos del producto
-        mkfifo("/tmp/mi_fifo", 0666);
-
-        fd = open("/tmp/mi_fifo", O_WRONLY);
-
-       //write(fd, &swichopc, sizeof(int)); //opcion a ejecutar el server
-        write(fd, &nombre_producto, sizeof(nombre_producto));
-        write(fd, &IDproducto, sizeof(IDproducto));
-        write(fd, &Descripcion, sizeof(Descripcion));
-
-        close(fd);
-
-        printf("Los datos se actualizaron con exito..\n");
-
-        inicioSesion();*/
+        //printf("\n");
+         inicioSesion();
         break;
     case 4:
         printf("Regresando a inicio...\n");
