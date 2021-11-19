@@ -30,6 +30,8 @@ int ID_producto = 0;
 char Descripcion[100];
 char nombre_producto[100];
 int swichopc = 0;
+char rsp[] = "EL producto no esta registrado.\n";
+char rsp2[] = "El producto esta en almacen.\n";
 //Archivos compartidos
 FILE *producto_p;
 
@@ -43,6 +45,25 @@ void *opcionesProvedorServer()
     {
     case 1: //Busqueda de articulo
 
+        producto_p = fopen(nombre_producto, "r");
+        if (producto_p == NULL)
+        {
+            mkfifo("/tmp/mi_fifo", 0666);
+
+            fd = open("/tmp/mi_fifo", O_WRONLY);
+            write(fd, &rsp, sizeof(rsp));
+            close(fd);
+        }
+        else
+        {
+            mkfifo("/tmp/mi_fifo", 0666);
+
+            fd = open("/tmp/mi_fifo", O_WRONLY);
+            write(fd, &rsp2, sizeof(rsp));
+            close(fd);
+        }
+
+        fclose(producto_p);
         break;
     case 2: //Agregar Articulo
 
@@ -85,7 +106,7 @@ void menu_de_opciones(int usuario_provedor)
     2: Agregar articulo
     3: Agregar Existencia
         */
-        
+
         fd = open("/tmp/mi_fifo", O_RDONLY);
         read(fd, &swichopc, sizeof(int));
         read(fd, &nombre_producto, sizeof(nombre_producto));
@@ -96,6 +117,12 @@ void menu_de_opciones(int usuario_provedor)
         {
         case 1:
             /* code */
+            if (0 != pthread_create(&thread1, NULL, opcionesProvedorServer, NULL))
+            {
+                printf("Error en hilo\n");
+                exit(0);
+            }
+            printf("\nUn cliente esta siendo atendido.\n");
             break;
         case 2:
 

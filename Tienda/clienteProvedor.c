@@ -17,6 +17,7 @@ int swichopc;
 int IDproducto;
 char Descripcion[100];
 char nombre_producto[100];
+char rsp[100];
 
 //prototipos
 int PIPE_CONEXION(int conexion, int identificador);
@@ -131,13 +132,34 @@ void opcionesProvedor()
     {
     case 1:
         /* pedirle al provedor el nombre del articulo o id y enviar al servidor */
+        swichopc = 1;
+        printf("Ingresa el nombre del producto.txt a buscar:\n");
+        scanf("%s", nombre_producto);
+
+        mkfifo("/tmp/mi_fifo", 0666);
+
+        fd = open("/tmp/mi_fifo", O_WRONLY);
+
+        write(fd, &swichopc, sizeof(int)); //opcion a ejecutar el server
+        write(fd, &nombre_producto, sizeof(nombre_producto));
+
+        close(fd);
+
+        //Recibir la respuesta
+
+        fd = open("/tmp/mi_fifo", O_RDONLY);
+        read(fd, &rsp, sizeof(rsp));
+        printf("%s",rsp);
+        close(fd);
+
+        inicioSesion();
+
         break;
     case 2:
 
         swichopc = 2;
         IDproducto = 0;
-        char Descripcion[100];
-        char nombre_producto[100];
+
         printf("Ingresa el nombre del producto.txt:\n");
         scanf("%s", nombre_producto);
         printf("Ingresa el ID del producto de 3 digitos:\n");
@@ -156,7 +178,7 @@ void opcionesProvedor()
         write(fd, &Descripcion, sizeof(Descripcion));
 
         close(fd);
-        
+
         printf("Producto Agregado Correctamente\n");
         inicioSesion();
         break;
