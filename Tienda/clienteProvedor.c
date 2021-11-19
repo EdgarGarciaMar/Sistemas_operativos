@@ -120,6 +120,7 @@ void crearCuenta()
 void opcionesProvedor()
 {
     int opcionProveerdor;
+    char descrip[10]="NULL";
 
     printf("+Selecciona 1 de las siguientes opciones:\n");
     printf("1: Busqueda de articulo\n");
@@ -133,6 +134,9 @@ void opcionesProvedor()
     case 1:
         /* pedirle al provedor el nombre del articulo o id y enviar al servidor */
         swichopc = 1;
+        IDproducto=0;
+        
+
         printf("Ingresa el nombre del producto.txt a buscar:\n");
         scanf("%s", nombre_producto);
 
@@ -142,6 +146,8 @@ void opcionesProvedor()
 
         write(fd, &swichopc, sizeof(int)); //opcion a ejecutar el server
         write(fd, &nombre_producto, sizeof(nombre_producto));
+        write(fd, &IDproducto, sizeof(IDproducto));
+        write(fd, &descrip, sizeof(descrip));
 
         close(fd);
 
@@ -149,7 +155,7 @@ void opcionesProvedor()
 
         fd = open("/tmp/mi_fifo", O_RDONLY);
         read(fd, &rsp, sizeof(rsp));
-        printf("%s",rsp);
+        printf("%s", rsp);
         close(fd);
 
         inicioSesion();

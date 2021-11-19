@@ -9,6 +9,8 @@
 #include <pthread.h>
 //Semaforo
 #include <semaphore.h>
+//recuperacion de datos del archivo
+#include <time.h>
 
 //******variables globales******
 //tuberia
@@ -37,33 +39,39 @@ FILE *producto_p;
 
 void *opcionesProvedorServer()
 {
-    printf("HILO***************************");
+    printf("********************HILO Proveedor***************************\n");
     sem_wait(&semaforo);
     int opc = swichopc;
+    struct stat sb;
 
     switch (opc)
     {
     case 1: //Busqueda de articulo
 
-        producto_p = fopen(nombre_producto, "r");
-        if (producto_p == NULL)
-        {
-            mkfifo("/tmp/mi_fifo", 0666);
+        mkfifo("/tmp/mi_fifo", 0666);
 
-            fd = open("/tmp/mi_fifo", O_WRONLY);
+        fd = open("/tmp/mi_fifo", O_WRONLY);
+
+        if (stat(nombre_producto, &sb) == -1)
+        {
+            
+            perror("El archivo no existe reiniciando server\n");
             write(fd, &rsp, sizeof(rsp));
-            close(fd);
-        }
-        else
-        {
-            mkfifo("/tmp/mi_fifo", 0666);
-
-            fd = open("/tmp/mi_fifo", O_WRONLY);
-            write(fd, &rsp2, sizeof(rsp));
-            close(fd);
+            exit(EXIT_FAILURE);
         }
 
-        fclose(producto_p);
+        printf("Inode number: %lu\n", sb.st_ino);
+        printf("User ID of owner: %u\n", sb.st_uid);
+        printf("Group ID of owner: %u\n", sb.st_gid);
+        printf("Total file size: %lu bytes\n", sb.st_size);
+        printf("Last status change:       %s", ctime(&sb.st_ctime));
+        printf("Last file access:         %s", ctime(&sb.st_atime));
+        printf("Last file modification:   %s", ctime(&sb.st_mtime));
+
+        write(fd, &rsp2, sizeof(rsp2));
+        close(fd);
+        printf("Consulta finalizada con exito...\n");
+        exit(0);
         break;
     case 2: //Agregar Articulo
 
@@ -119,7 +127,7 @@ void menu_de_opciones(int usuario_provedor)
             /* code */
             if (0 != pthread_create(&thread1, NULL, opcionesProvedorServer, NULL))
             {
-                printf("Error en hilo\n");
+                printf("Error en hilo de consulta\n");
                 exit(0);
             }
             printf("\nUn cliente esta siendo atendido.\n");
@@ -128,7 +136,7 @@ void menu_de_opciones(int usuario_provedor)
 
             if (0 != pthread_create(&thread1, NULL, opcionesProvedorServer, NULL))
             {
-                printf("Error en hilo\n");
+                printf("Error en hilo de agregar producto\n");
                 exit(0);
             }
             printf("\nUn cliente esta siendo atendido.\n");
