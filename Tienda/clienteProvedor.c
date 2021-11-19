@@ -17,7 +17,7 @@ int swichopc;
 int IDproducto;
 char Descripcion[100];
 char nombre_producto[100];
-char rsp[100];
+char rsp[1000];
 
 //prototipos
 int PIPE_CONEXION(int conexion, int identificador);
@@ -120,7 +120,7 @@ void crearCuenta()
 void opcionesProvedor()
 {
     int opcionProveerdor;
-    char descrip[10]="NULL";
+    char descrip[10] = "NULL";
 
     printf("+Selecciona 1 de las siguientes opciones:\n");
     printf("1: Busqueda de articulo\n");
@@ -134,8 +134,7 @@ void opcionesProvedor()
     case 1:
         /* pedirle al provedor el nombre del articulo o id y enviar al servidor */
         swichopc = 1;
-        IDproducto=0;
-        
+        IDproducto = 0;
 
         printf("Ingresa el nombre del producto.txt a buscar:\n");
         scanf("%s", nombre_producto);
@@ -190,6 +189,59 @@ void opcionesProvedor()
         break;
     case 3:
         /*pedirle al provedor el nombre del articulo o id, el numero de unidades a agregar y enviar al servidor*/
+        swichopc = 3;
+        IDproducto = 0;
+
+        printf("Ingresa el nombre del producto.txt a actualizar:\n");
+        scanf("%s", nombre_producto);
+
+        mkfifo("/tmp/mi_fifo", 0666);
+
+        fd = open("/tmp/mi_fifo", O_WRONLY);
+
+        write(fd, &swichopc, sizeof(int)); //opcion a ejecutar el server
+        write(fd, &nombre_producto, sizeof(nombre_producto));
+        write(fd, &IDproducto, sizeof(IDproducto));
+        write(fd, &descrip, sizeof(descrip));
+
+        close(fd);
+
+        //Recibir la respuesta
+        printf("******El produto contiene:*****\n");
+        printf("1 linea el nombre\n");
+        printf("2 linea el ID\n");
+        printf("3 linea el stock\n");
+
+        fd = open("/tmp/mi_fifo", O_RDONLY);
+        read(fd, &rsp, sizeof(rsp));
+        printf("%s", rsp);
+        close(fd);
+
+        printf("*******************************\n");
+        /*printf("\tConfirma los datos y realiza cambios.\n");
+
+        printf("Confirma o actualiza el nombre del producto.txt:\n");
+        scanf("%s", nombre_producto);
+        printf("Confirma o actualiza el ID del producto de 3 digitos:\n");
+        scanf("%d", &IDproducto);
+        printf("Confirma o actualiza la existencia:\n");
+        scanf("%s", Descripcion);
+
+        //envio de Datos del producto
+        mkfifo("/tmp/mi_fifo", 0666);
+
+        fd = open("/tmp/mi_fifo", O_WRONLY);
+
+       //write(fd, &swichopc, sizeof(int)); //opcion a ejecutar el server
+        write(fd, &nombre_producto, sizeof(nombre_producto));
+        write(fd, &IDproducto, sizeof(IDproducto));
+        write(fd, &Descripcion, sizeof(Descripcion));
+
+        close(fd);
+
+        printf("Los datos se actualizaron con exito..\n");
+
+        inicioSesion();*/
         break;
     case 4:
         printf("Regresando a inicio...\n");

@@ -43,6 +43,7 @@ void *opcionesProvedorServer()
     sem_wait(&semaforo);
     int opc = swichopc;
     struct stat sb;
+    char text[20];
 
     switch (opc)
     {
@@ -54,7 +55,7 @@ void *opcionesProvedorServer()
 
         if (stat(nombre_producto, &sb) == -1)
         {
-            
+
             perror("El archivo no existe reiniciando server\n");
             write(fd, &rsp, sizeof(rsp));
             exit(EXIT_FAILURE);
@@ -82,7 +83,6 @@ void *opcionesProvedorServer()
             exit(0);
         }
 
-        char text[20];
         sprintf(text, "%d", ID_producto);
 
         fputs(nombre_producto, producto_p);
@@ -93,10 +93,71 @@ void *opcionesProvedorServer()
         fputs("\n", producto_p);
 
         fclose(producto_p);
-
+        printf("Edita el archivo sin permiso.......\n");
         break;
     case 3: //Agregar existencia
         /* code */
+        producto_p = fopen(nombre_producto, "r");
+        if (producto_p == NULL)
+        {
+            printf("Error al abir el archivo del producto.\n");
+            exit(0);
+        }
+        if (stat(nombre_producto, &sb) == -1)
+        {
+            perror("Error al abir el archivo del producto.\n");
+            exit(EXIT_FAILURE);
+        }
+
+        char file_contents[1000];
+        fread(file_contents, sb.st_size, 1, producto_p);
+
+        mkfifo("/tmp/mi_fifo", 0666);
+
+        fd = open("/tmp/mi_fifo", O_WRONLY);
+
+        write(fd, &file_contents, sizeof(file_contents));
+
+        close(fd);
+
+        printf("%s\n", file_contents);
+
+        fclose(producto_p);
+
+       /* printf("Espearndo datos nuevos....\n");//todo good
+
+        //Recibimos los datos nuevos
+        fd = open("/tmp/mi_fifo", O_RDONLY);
+        read(fd, &swichopc, sizeof(int));
+        read(fd, &nombre_producto, sizeof(nombre_producto));
+        read(fd, &ID_producto, sizeof(ID_producto));
+        read(fd, &Descripcion, sizeof(Descripcion));
+        close(fd);
+
+        printf("Datos recividos....\n");
+        printf("***%s\n", nombre_producto);
+        printf("**%d\n", ID_producto);
+        printf("*%s\n", Descripcion);
+
+        producto_p = fopen(nombre_producto, "w");
+        if (producto_p == NULL)
+        {
+            printf("Error al abir o crear el archivo del producto.\n");
+            exit(0);
+        }
+
+        sprintf(text, "%d", ID_producto);
+
+        fputs(nombre_producto, producto_p);
+        fputs("\n", producto_p);
+        fputs(text, producto_p);
+        fputs("\n", producto_p);
+        fputs(Descripcion, producto_p);
+        fputs("\n", producto_p);
+
+        fclose(producto_p);
+        exit(0);*/
+        exit(1);
         break;
     }
 
@@ -143,7 +204,12 @@ void menu_de_opciones(int usuario_provedor)
 
             break;
         case 3:
-            /* code */
+            if (0 != pthread_create(&thread1, NULL, opcionesProvedorServer, NULL))
+            {
+                printf("Error en hilo de Actualizar producto\n");
+                exit(0);
+            }
+            printf("\nUn cliente esta siendo atendido.\n");
             break;
         case 4:
             printf("El cliente salio de la app.\n");
