@@ -18,6 +18,21 @@ int IDproducto;
 char Descripcion[100];
 char nombre_producto[100];
 
+//prototipos
+int PIPE_CONEXION(int conexion, int identificador);
+int inicioProveedor();
+int inicioCliente();
+void crearCuenta();
+void opcionesProvedor();
+void opcionesCliente();
+void inicioSesion();
+
+int main(void)
+{
+    inicioSesion();
+    return 0;
+}
+
 //Tuberia de conexion, con esta funcion pedimos acceso al servidor
 int PIPE_CONEXION(int conexion, int identificador)
 {
@@ -109,6 +124,7 @@ void opcionesProvedor()
     printf("1: Busqueda de articulo\n");
     printf("2: Agregar articulo\n");
     printf("3: Agregar Existencia\n");
+    printf("4: Salir\n");
     scanf("%d", &opcionProveerdor);
 
     switch (opcionProveerdor)
@@ -141,14 +157,15 @@ void opcionesProvedor()
 
         close(fd);
         
-
+        printf("Producto Agregado Correctamente\n");
+        inicioSesion();
         break;
     case 3:
         /*pedirle al provedor el nombre del articulo o id, el numero de unidades a agregar y enviar al servidor*/
         break;
-    default:
-        printf("No seleccionaste ninguna opcion del menu, regresando a inicio...\n");
-        //inicioSesion();
+    case 4:
+        printf("Regresando a inicio...\n");
+        inicioSesion();
         break;
     }
 }
@@ -266,10 +283,4 @@ void inicioSesion()
         inicioSesion();
         break;
     }
-}
-
-int main(void)
-{
-    inicioSesion();
-    return 0;
 }

@@ -77,7 +77,7 @@ void *opcionesProvedorServer()
 
 void menu_de_opciones(int usuario_provedor)
 {
-    
+
     if (usuario_provedor == 1) //opc de proveedor
     {
         /*
@@ -85,7 +85,7 @@ void menu_de_opciones(int usuario_provedor)
     2: Agregar articulo
     3: Agregar Existencia
         */
-        printf("\nHOLA DESDE LAS OPC DE PROVEDOR SERVER\n");
+        
         fd = open("/tmp/mi_fifo", O_RDONLY);
         read(fd, &swichopc, sizeof(int));
         read(fd, &nombre_producto, sizeof(nombre_producto));
@@ -98,8 +98,8 @@ void menu_de_opciones(int usuario_provedor)
             /* code */
             break;
         case 2:
-            
-            if (0 != pthread_create(&thread1, NULL, opcionesProvedorServer,NULL))
+
+            if (0 != pthread_create(&thread1, NULL, opcionesProvedorServer, NULL))
             {
                 printf("Error en hilo\n");
                 exit(0);
@@ -109,6 +109,9 @@ void menu_de_opciones(int usuario_provedor)
             break;
         case 3:
             /* code */
+            break;
+        case 4:
+            printf("El cliente salio de la app.\n");
             break;
         }
     }
