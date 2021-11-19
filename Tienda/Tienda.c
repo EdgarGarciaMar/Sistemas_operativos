@@ -65,17 +65,6 @@ void *opcionesProvedorServer()
 
         fclose(producto_p);
 
-        //leer lo que se escribio
-
-        /*char buffer[1000];
-
-        producto_p = fopen(nombre_producto, "r");
-
-        fscanf(producto_p, "%s", buffer);
-        printf("%s", buffer);
-
-        fclose(producto_p);*/
-
         break;
     case 3: //Agregar existencia
         /* code */
