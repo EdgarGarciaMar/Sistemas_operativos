@@ -9,9 +9,14 @@
 //Variables globales
 int fd;
 char contrasena[5];
-int usuario=0;
+int usuario = 0;
 int respuesta = 0;
 int id = 0;
+//opc
+int swichopc;
+int IDproducto;
+char Descripcion[100];
+char nombre_producto[100];
 
 //Tuberia de conexion, con esta funcion pedimos acceso al servidor
 int PIPE_CONEXION(int conexion, int identificador)
@@ -32,7 +37,6 @@ int PIPE_CONEXION(int conexion, int identificador)
 
     write(fd, &contrasena, sizeof(contrasena));
 
-
     close(fd);
 
     //Recepción de la confirmación de la contraseña
@@ -42,7 +46,6 @@ int PIPE_CONEXION(int conexion, int identificador)
     read(fd, &respuesta, sizeof(int));
 
     close(fd);
-
 
     if (respuesta == 0)
     {
@@ -114,7 +117,31 @@ void opcionesProvedor()
         /* pedirle al provedor el nombre del articulo o id y enviar al servidor */
         break;
     case 2:
-        /*pedirle al provedor el nombre del articulo o id, enviar al servidor y que el servidor cree el articulo*/
+
+        swichopc = 2;
+        IDproducto = 0;
+        char Descripcion[100];
+        char nombre_producto[100];
+        printf("Ingresa el nombre del producto.txt:\n");
+        scanf("%s", nombre_producto);
+        printf("Ingresa el ID del producto de 3 digitos:\n");
+        scanf("%d", &IDproducto);
+        printf("Ingresa la existencia:\n");
+        scanf("%s", Descripcion);
+
+        //envio de Datos del producto
+        mkfifo("/tmp/mi_fifo", 0666);
+
+        fd = open("/tmp/mi_fifo", O_WRONLY);
+
+        write(fd, &swichopc, sizeof(int)); //opcion a ejecutar el server
+        write(fd, &nombre_producto, sizeof(nombre_producto));
+        write(fd, &IDproducto, sizeof(IDproducto));
+        write(fd, &Descripcion, sizeof(Descripcion));
+
+        close(fd);
+        
+
         break;
     case 3:
         /*pedirle al provedor el nombre del articulo o id, el numero de unidades a agregar y enviar al servidor*/
