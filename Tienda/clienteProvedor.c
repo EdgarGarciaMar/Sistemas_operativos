@@ -14,7 +14,7 @@ int respuesta = 0;
 int id = 0;
 //opc
 int swichopc;
-int IDproducto;
+int IDproducto;//Es el precio
 char Descripcion[100];
 char nombre_producto[100];
 char rsp[1000];
@@ -115,7 +115,7 @@ void crearCuenta()
 {
     int id_nuevo;
     char nombre[20];
-    printf("Ingresa tu nombre de no mas de 20 caracteres\n");
+    printf("Ingresa tu ID 1 caracterer\n");
     scanf("%s", nombre);
     srand(time(NULL));
     id_nuevo = rand() % 1100;
@@ -172,7 +172,7 @@ void opcionesProvedor()
 
         printf("Ingresa el nombre del producto.txt:\n");
         scanf("%s", nombre_producto);
-        printf("Ingresa el ID del producto de 3 digitos:\n");
+        printf("Ingresa el Precio del producto:\n");
         scanf("%d", &IDproducto);
         printf("Ingresa la existencia:\n");
         scanf("%s", Descripcion);
@@ -199,7 +199,7 @@ void opcionesProvedor()
 
         printf("Ingresa el nombre del producto.txt a actualizar:\n");
         scanf("%s", nombre_producto);
-        printf("Ingresa el ID del producto de 3 digitos:\n");
+        printf("Ingresa el Precio del producto:\n");
         scanf("%d", &IDproducto);
         printf("Ingresa la existencia:\n");
         scanf("%s", Descripcion);
@@ -236,7 +236,7 @@ void opcionesProvedor()
         //Recibir la respuesta
         printf("******El produto contiene:*****\n");
         printf("1 linea el nombre\n");
-        printf("2 linea el ID\n");
+        printf("2 linea el Precio\n");
         printf("3 linea el stock\n");
 
         fd = open("/tmp/mi_fifo", O_RDONLY);
@@ -276,7 +276,7 @@ void opcionesCliente()
             //printf("%s\n", productos_base[i]);
             printf("******El produto contiene:*****\n");
             printf("1 linea el nombre\n");
-            printf("2 linea el ID\n");
+            printf("2 linea el Precio\n");
             printf("3 linea el stock\n");
             producto_p = fopen(productos_base[i], "r");
             if (producto_p == NULL)
@@ -302,7 +302,7 @@ void opcionesCliente()
         scanf("%s", nombre_carro);
         printf("Ingresa el nombre de producto.txt\n");
         scanf("%s", nombre_producto);
-        printf("Ingresa el ID del producto.txt\n");
+        printf("Ingresa el Precio del producto.txt\n");
         scanf("%d", &IDproducto);
         printf("Ingresa la cantidad de productos a comprar de produco.txt\n");
         scanf("%s", Descripcion);
@@ -321,7 +321,7 @@ void opcionesCliente()
 
         printf("******El carro contiene:*****\n");
         printf("1 linea el nombre\n");
-        printf("2 linea el ID\n");
+        printf("2 linea el Precio a pagar\n");
         printf("3 Productos a comprar\n");
         
         break;

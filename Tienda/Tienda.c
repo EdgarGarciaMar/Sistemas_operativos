@@ -28,7 +28,7 @@ char contra[] = "12345";
 int usuario = 1;
 int id;
 //Operaciones de provedor
-int ID_producto = 0;
+int ID_producto = 0;//Precio del producto
 char Descripcion[100];
 char nombre_producto[100];
 int swichopc = 0;
