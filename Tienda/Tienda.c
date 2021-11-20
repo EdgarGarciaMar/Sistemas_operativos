@@ -18,7 +18,7 @@ int fd = 0;
 //hilo
 pthread_t thread1, thread2;
 //semaforo
-sem_t semaforo;
+sem_t semaforo,semaforo2;
 //variables funcionales
 char conexion[5];     //contra a validar
 int Usuarioadm = 0;   //usuario a validar
@@ -44,7 +44,7 @@ char nombrecarro[30];
 void *opcionesUsuario()
 {
     printf("********************HILO Usuario***************************\n");
-    sem_wait(&semaforo);
+    sem_wait(&semaforo2);
     //printf("opc=%d\n",swichopc);
     switch (swichopc)
     {
@@ -75,7 +75,7 @@ void *opcionesUsuario()
     default:
         break;
     }
-    sem_post(&semaforo);
+    sem_post(&semaforo2);
     pthread_exit(NULL);
 }
 
@@ -355,6 +355,7 @@ void PIPE_CONEXION(int fd)
 int main(void)
 {
     sem_init(&semaforo, 0, 1);
+    sem_init(&semaforo2, 0, 1);
     while (1)
     {
 
