@@ -37,6 +37,47 @@ char rsp2[] = "El producto esta en almacen.\n";
 //Archivos compartidos
 FILE *producto_p;
 FILE *carrito;
+char text[20];
+//archivo de carritos
+char nombrecarro[30];
+
+void *opcionesUsuario()
+{
+    printf("********************HILO Usuario***************************\n");
+    sem_wait(&semaforo);
+    //printf("opc=%d\n",swichopc);
+    switch (swichopc)
+    {
+    case 1:
+        carrito = fopen(nombrecarro, "w");
+        if (carrito == NULL)
+        {
+            printf("Error al abir o crear el archivo del producto.\n");
+            exit(0);
+        }
+        //printf("***Carro creado******\n");
+
+        sprintf(text, "%d", ID_producto);
+
+        fputs(nombre_producto, carrito);
+        fputs("\n", carrito);
+        fputs(text, carrito);
+        fputs("\n", carrito);
+        fputs(Descripcion, carrito);
+        fputs("\n", carrito);
+
+        fclose(carrito);
+        break;
+    case 2:
+        /* code */
+        break;
+
+    default:
+        break;
+    }
+    sem_post(&semaforo);
+    pthread_exit(NULL);
+}
 
 void *opcionesProvedorServer()
 {
@@ -44,7 +85,6 @@ void *opcionesProvedorServer()
     sem_wait(&semaforo);
     int opc = swichopc;
     struct stat sb;
-    char text[20];
 
     switch (opc)
     {
@@ -94,7 +134,7 @@ void *opcionesProvedorServer()
         fputs("\n", producto_p);
 
         fclose(producto_p);
-        
+
         break;
     case 3: //Agregar existencia
         /* code */
@@ -125,7 +165,6 @@ void *opcionesProvedorServer()
 
         fclose(producto_p);
 
-        
         //exit(1);
         break;
     }
@@ -156,6 +195,7 @@ void menu_de_opciones(int usuario_provedor)
         {
         case 1:
             /* code */
+
             if (0 != pthread_create(&thread1, NULL, opcionesProvedorServer, NULL))
             {
                 printf("Error en hilo de consulta\n");
@@ -193,6 +233,32 @@ void menu_de_opciones(int usuario_provedor)
       2: Guaradr carrito
     */
         printf("\nHOLA DESDE LAS OPC DE usuario SERVER");
+
+        fd = open("/tmp/mi_fifo", O_RDONLY);
+        read(fd, &swichopc, sizeof(int));
+        read(fd, &nombrecarro, sizeof(nombrecarro));
+        read(fd, &nombre_producto, sizeof(nombre_producto));
+        read(fd, &ID_producto, sizeof(ID_producto));
+        read(fd, &Descripcion, sizeof(Descripcion));
+        close(fd);
+
+        printf("%d---%s---%s---%d---%s",swichopc,nombrecarro, nombre_producto, ID_producto, Descripcion);
+        switch (swichopc)
+        {
+        case 1:
+            if (0 != pthread_create(&thread1, NULL, opcionesUsuario, NULL))
+            {
+                printf("Error en hilo de solicitud de carrito\n");
+                exit(0);
+            }
+            printf("\nUn cliente esta comprando.\n");
+            break;
+        case 2:
+
+            break;
+        default:
+            break;
+        }
     }
 }
 int validar_usuario(int usuarioadm, int usuario)
@@ -271,7 +337,7 @@ void PIPE_CONEXION(int fd)
         printf("El id de la conexion es: %d\n", id);
 
         menu_de_opciones(usuario_provedor); //habilitamos las acciones del server
-        printf("Salio de opc de proveedorrrrrrr");
+        //printf("Salio de opc de proveedorrrrrrr");
     }
     else
     {

@@ -21,6 +21,8 @@ char rsp[1000];
 //actualizar
 char text[20];
 FILE *producto_p;
+//carrito
+char nombre_carro[30];
 
 //prototipos
 int PIPE_CONEXION(int conexion, int identificador);
@@ -268,11 +270,14 @@ void opcionesCliente()
     {
     case 1:
         /* Solicitar un carrito, abrir la comunicacion y comenzar a comprar */
-        
-        for (int i = 0; i < 10; i++)
+        swichopc = 1;
+        for (int i = 0; i < 10; i++) //lista de productos
         {
             //printf("%s\n", productos_base[i]);
-            printf("producto\n");
+            printf("******El produto contiene:*****\n");
+            printf("1 linea el nombre\n");
+            printf("2 linea el ID\n");
+            printf("3 linea el stock\n");
             producto_p = fopen(productos_base[i], "r");
             if (producto_p == NULL)
             {
@@ -285,7 +290,6 @@ void opcionesCliente()
                 exit(EXIT_FAILURE);
             }
 
-            
             fread(file_contents, sb.st_size, 1, producto_p);
             printf("+++++++++++++++++++++++\n");
             printf("%s\n", file_contents);
@@ -293,6 +297,33 @@ void opcionesCliente()
 
             fclose(producto_p);
         }
+
+        printf("Ingresa el nombre del carrito.txt\n");
+        scanf("%s", nombre_carro);
+        printf("Ingresa el nombre de producto.txt\n");
+        scanf("%s", nombre_producto);
+        printf("Ingresa el ID del producto.txt\n");
+        scanf("%d", &IDproducto);
+        printf("Ingresa la cantidad de productos a comprar de produco.txt\n");
+        scanf("%s", Descripcion);
+
+        mkfifo("/tmp/mi_fifo", 0666);
+
+        fd = open("/tmp/mi_fifo", O_WRONLY);
+
+        write(fd, &swichopc, sizeof(int)); //opcion a ejecutar el server
+        write(fd, &nombre_carro, sizeof(nombre_carro));
+        write(fd, &nombre_producto, sizeof(nombre_producto));
+        write(fd, &IDproducto, sizeof(IDproducto));
+        write(fd, &Descripcion, sizeof(Descripcion));
+
+        close(fd);
+
+        printf("******El carro contiene:*****\n");
+        printf("1 linea el nombre\n");
+        printf("2 linea el ID\n");
+        printf("3 Productos a comprar\n");
+        
         break;
     case 2:
         /*guardas el caririto*/
