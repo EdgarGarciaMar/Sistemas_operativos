@@ -243,7 +243,7 @@ void opcionesProvedor()
         close(fd);
         printf("*******************************\n");
         //printf("\n");
-         inicioSesion();
+        inicioSesion();
         break;
     case 4:
         printf("Regresando a inicio...\n");
@@ -256,6 +256,9 @@ void opcionesProvedor()
 void opcionesCliente()
 {
     int opcionCliente;
+    char productos_base[][20] = {"agua.txt", "arroz.txt", "audifonos.txt", "cloro.txt", "donas.txt", "Mac.txt", "pan.txt", "PC_Gamer.txt", "play5.txt", "xbox.txt"};
+    struct stat sb;
+    char file_contents[1000];
 
     printf("+Selecciona 1 de las siguientes opciones:\n");
     printf("1: Solicitar Carrito\n");
@@ -265,13 +268,38 @@ void opcionesCliente()
     {
     case 1:
         /* Solicitar un carrito, abrir la comunicacion y comenzar a comprar */
+        
+        for (int i = 0; i < 10; i++)
+        {
+            //printf("%s\n", productos_base[i]);
+            printf("producto\n");
+            producto_p = fopen(productos_base[i], "r");
+            if (producto_p == NULL)
+            {
+                printf("Error al abir el archivo del producto.\n");
+                exit(0);
+            }
+            if (stat(productos_base[i], &sb) == -1)
+            {
+                perror("Error al abir el archivo del producto.\n");
+                exit(EXIT_FAILURE);
+            }
+
+            
+            fread(file_contents, sb.st_size, 1, producto_p);
+            printf("+++++++++++++++++++++++\n");
+            printf("%s\n", file_contents);
+            printf("+++++++++++++++++++++++\n");
+
+            fclose(producto_p);
+        }
         break;
     case 2:
         /*guardas el caririto*/
         break;
     default:
         printf("No seleccionaste ninguna opcion del menu, regresando a inicio...\n");
-        //inicioSesion();
+        inicioSesion();
         break;
     }
 }

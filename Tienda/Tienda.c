@@ -36,6 +36,7 @@ char rsp[] = "EL producto no esta registrado.\n";
 char rsp2[] = "El producto esta en almacen.\n";
 //Archivos compartidos
 FILE *producto_p;
+FILE *carrito;
 
 void *opcionesProvedorServer()
 {
