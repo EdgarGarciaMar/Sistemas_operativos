@@ -110,17 +110,6 @@ int inicioCliente()
     return con;
 }
 
-//Función de creacion de cuenta para cliente y proveedor
-void crearCuenta()
-{
-    int id_nuevo;
-    char nombre[20];
-    printf("Ingresa tu ID 1 caracterer\n");
-    scanf("%s", nombre);
-    srand(time(NULL));
-    id_nuevo = rand() % 1100;
-}
-
 //Acciones de Agregar artículo, Agregar existencia, Búsqueda del artículo
 void opcionesProvedor()
 {
@@ -409,7 +398,7 @@ void opcionesCliente()
 void inicioSesion()
 {
     //Variables
-    int login, proveedor = 0, cliente = 0, opcErrorContrasena;
+    int login, proveedor = 0, cliente = 0;
 
     //Impresion en consola
     printf("***************************************\n");
@@ -432,22 +421,8 @@ void inicioSesion()
 
             //Informe del error
             printf("**ID o contrasena incorrecta**\n");
-            printf("Seleccione una de las siguientes opciones:\n");
-            printf("1: Volver a digitar ID y contrasena desde el menu principal\n");
-            printf("2: crear una cuenta\n");
-            scanf("%d", &opcErrorContrasena);
-            switch (opcErrorContrasena)
-            {
-            case 1:
-                inicioSesion();
-                break;
-            case 2:
-                crearCuenta();
-            default:
-                printf("opcion invalida, volviendo al menu\n");
-                inicioSesion();
-                break;
-            }
+            printf("**Porfavor intentalo de nuevo**\n");
+            inicioSesion();
         }
         else
         {
@@ -462,22 +437,8 @@ void inicioSesion()
 
             //Informe del error
             printf("**ID o contrasena incorrecta**\n");
-            printf("Seleccione una de las siguientes opciones:\n");
-            printf("1: Volver a digitar ID y contrasena desde el menu principal\n");
-            printf("2: crear una cuenta\n");
-            scanf("%d", &opcErrorContrasena);
-            switch (opcErrorContrasena)
-            {
-            case 1:
-                inicioSesion();
-                break;
-            case 2:
-                crearCuenta();
-            default:
-                printf("opcion invalida, volviendo al menu\n");
-                inicioSesion();
-                break;
-            }
+            printf("**Porfavor intentalo de nuevo**\n");
+            inicioSesion();
         }
 
         else
