@@ -14,7 +14,7 @@ int respuesta = 0;
 int id = 0;
 //opc
 int swichopc;
-int IDproducto;//Es el precio
+int IDproducto; //Es el precio
 char Descripcion[100];
 char nombre_producto[100];
 char rsp[1000];
@@ -261,6 +261,7 @@ void opcionesCliente()
     char productos_base[][20] = {"agua.txt", "arroz.txt", "audifonos.txt", "cloro.txt", "donas.txt", "Mac.txt", "pan.txt", "PC_Gamer.txt", "play5.txt", "xbox.txt"};
     struct stat sb;
     char file_contents[1000];
+    int guardar_carro;
 
     printf("+Selecciona 1 de las siguientes opciones:\n");
     printf("1: Solicitar Carrito\n");
@@ -304,7 +305,7 @@ void opcionesCliente()
         scanf("%s", nombre_producto);
         printf("Ingresa el Precio del producto.txt\n");
         scanf("%d", &IDproducto);
-        printf("Ingresa la cantidad de productos a comprar de produco.txt\n");
+        printf("Ingresa la cantidad de productos a comprar de producto.txt\n");
         scanf("%s", Descripcion);
 
         mkfifo("/tmp/mi_fifo", 0666);
@@ -320,13 +321,56 @@ void opcionesCliente()
         close(fd);
 
         printf("******El carro contiene:*****\n");
-        printf("1 linea el nombre\n");
-        printf("2 linea el Precio a pagar\n");
-        printf("3 Productos a comprar\n");
-        
+        printf("Nombre:%s\n", nombre_producto);
+        printf("Precio:%d\n", IDproducto);
+        printf("Numero de productos a comprar:%s\n", Descripcion);
+
+        printf("\n");
+        printf("¿Desea pagar?\n");
+        printf("1: si\n");
+        printf("2: No\n");
+        scanf("%d", &guardar_carro);
+
+        if (guardar_carro == 1)
+        {
+            
+            printf("Total a pagar: $ %d\n", IDproducto);
+            printf("Puede ingresar su metodo de pago, Gracias por su compra\n");
+            printf("Pago-directo.\n");
+        }
+        else
+        {
+            printf("Carro Guardado, Gracias por su visita\n");
+        }
+
         break;
     case 2:
         /*guardas el caririto*/
+        swichopc = 2;
+        printf("Ingresa el nombre de tu carrito.txt\n");
+        scanf("%s", nombre_carro);
+        printf("Confirma el producto.txt\n");
+        scanf("%s", nombre_producto);
+        printf("Confirma el precio del producto.txt\n");
+        scanf("%d", &IDproducto);
+        printf("confirma el numero de producto.txt\n");
+        scanf("%s", Descripcion);
+
+        printf("Total a pagar:$ %d\n",IDproducto);
+        printf("Gracias por su compra, el archivo esta almacenado.\n");
+        printf("Pago-archivo.\n");
+
+        mkfifo("/tmp/mi_fifo", 0666);
+
+        fd = open("/tmp/mi_fifo", O_WRONLY);
+
+        write(fd, &swichopc, sizeof(int)); //opcion a ejecutar el server
+        write(fd, &nombre_carro, sizeof(nombre_carro));
+        write(fd, &nombre_producto, sizeof(nombre_producto));
+        write(fd, &IDproducto, sizeof(IDproducto));
+        write(fd, &Descripcion, sizeof(Descripcion));
+
+        close(fd);
         break;
     default:
         printf("No seleccionaste ninguna opcion del menu, regresando a inicio...\n");

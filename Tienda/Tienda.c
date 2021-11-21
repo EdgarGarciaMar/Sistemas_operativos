@@ -18,7 +18,7 @@ int fd = 0;
 //hilo
 pthread_t thread1, thread2;
 //semaforo
-sem_t semaforo,semaforo2;
+sem_t semaforo, semaforo2;
 //variables funcionales
 char conexion[5];     //contra a validar
 int Usuarioadm = 0;   //usuario a validar
@@ -28,7 +28,7 @@ char contra[] = "12345";
 int usuario = 1;
 int id;
 //Operaciones de provedor
-int ID_producto = 0;//Precio del producto
+int ID_producto = 0; //Precio del producto
 char Descripcion[100];
 char nombre_producto[100];
 int swichopc = 0;
@@ -52,7 +52,7 @@ void *opcionesUsuario()
         carrito = fopen(nombrecarro, "w");
         if (carrito == NULL)
         {
-            printf("Error al abir o crear el archivo del producto.\n");
+            printf("Error al abir o crear el archivo del carro del cliente.\n");
             exit(0);
         }
         //printf("***Carro creado******\n");
@@ -65,11 +65,30 @@ void *opcionesUsuario()
         fputs("\n", carrito);
         fputs(Descripcion, carrito);
         fputs("\n", carrito);
+        fputs("Pago-directo.\n", carrito);
 
         fclose(carrito);
         break;
     case 2:
-        /* code */
+        carrito = fopen(nombrecarro, "w");
+        if (carrito == NULL)
+        {
+            printf("Error al abir el archivo del carro del cliente.\n");
+            exit(0);
+        }
+        //printf("***Carro creado******\n");
+
+        sprintf(text, "%d", ID_producto);
+
+        fputs(nombre_producto, carrito);
+        fputs("\n", carrito);
+        fputs(text, carrito);
+        fputs("\n", carrito);
+        fputs(Descripcion, carrito);
+        fputs("\n", carrito);
+        fputs("Pago-archivo.\n", carrito);
+
+        fclose(carrito);
         break;
 
     default:
@@ -232,7 +251,7 @@ void menu_de_opciones(int usuario_provedor)
       1: Solicitar Carrito
       2: Guaradr carrito
     */
-        printf("\nHOLA DESDE LAS OPC DE usuario SERVER");
+        //printf("\nHOLA DESDE LAS OPC DE usuario SERVER");
 
         fd = open("/tmp/mi_fifo", O_RDONLY);
         read(fd, &swichopc, sizeof(int));
@@ -242,7 +261,7 @@ void menu_de_opciones(int usuario_provedor)
         read(fd, &Descripcion, sizeof(Descripcion));
         close(fd);
 
-        printf("%d---%s---%s---%d---%s",swichopc,nombrecarro, nombre_producto, ID_producto, Descripcion);
+        printf("%d---%s---%s---%d---%s", swichopc, nombrecarro, nombre_producto, ID_producto, Descripcion);
         switch (swichopc)
         {
         case 1:
@@ -254,7 +273,12 @@ void menu_de_opciones(int usuario_provedor)
             printf("\nUn cliente esta comprando.\n");
             break;
         case 2:
-
+            if (0 != pthread_create(&thread1, NULL, opcionesUsuario, NULL))
+            {
+                printf("Error en hilo de Guardado de carrito\n");
+                exit(0);
+            }
+            printf("\nUn cliente esta pagando y guardando su carro.\n");
             break;
         default:
             break;
