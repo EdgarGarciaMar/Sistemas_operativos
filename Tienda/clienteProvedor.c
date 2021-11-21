@@ -126,6 +126,7 @@ void opcionesProvedor()
 {
     int opcionProveerdor;
     char descrip[10] = "NULL";
+    char nombre_productoala[10]="NULL";
 
     printf("+Selecciona 1 de las siguientes opciones:\n");
     printf("1: Busqueda de articulo\n");
@@ -249,6 +250,21 @@ void opcionesProvedor()
         break;
     case 4:
         printf("Regresando a inicio...\n");
+        swichopc = 4;
+        IDproducto = 0;
+
+
+
+        mkfifo("/tmp/mi_fifo", 0666);
+
+        fd = open("/tmp/mi_fifo", O_WRONLY);
+
+        write(fd, &swichopc, sizeof(int)); //opcion a ejecutar el server
+        write(fd, &nombre_productoala, sizeof(nombre_productoala));
+        write(fd, &IDproducto, sizeof(IDproducto));
+        write(fd, &descrip, sizeof(descrip));
+
+        close(fd);
         inicioSesion();
         break;
     }
@@ -333,7 +349,7 @@ void opcionesCliente()
 
         if (guardar_carro == 1)
         {
-            
+
             printf("Total a pagar: $ %d\n", IDproducto);
             printf("Puede ingresar su metodo de pago, Gracias por su compra\n");
             printf("Pago-directo.\n");
@@ -356,7 +372,7 @@ void opcionesCliente()
         printf("confirma el numero de producto.txt\n");
         scanf("%s", Descripcion);
 
-        printf("Total a pagar:$ %d\n",IDproducto);
+        printf("Total a pagar:$ %d\n", IDproducto);
         printf("Gracias por su compra, el archivo esta almacenado.\n");
         printf("Pago-archivo.\n");
 

@@ -344,7 +344,7 @@ void PIPE_CONEXION(int fd)
         identificadorConexionUsuario = validar_usuario(Usuarioadm, usuario[i]);
         printf("\nValdando contra: %d\n", i);
         identificadorConexion = validarContrasena(conexion, contra[i]);
-        printf("%d----%s", usuario[i], contra[i]);
+        printf("%d----%s\n", usuario[i], contra[i]);
 
         if (identificadorConexion == 0 && identificadorConexionUsuario == 0)
         {
