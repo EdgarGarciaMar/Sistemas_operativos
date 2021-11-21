@@ -24,8 +24,9 @@ char conexion[5];     //contra a validar
 int Usuarioadm = 0;   //usuario a validar
 int usuario_provedor; //indicador que habilita opciones para cliente o para proveedor
 //usuario admin
-char contra[] = "12345";
-int usuario = 1;
+char *contra[] = {"12345", "56789", "01234"};
+int tam = sizeof(contra) / sizeof(char *);
+int usuario[3] = {1, 2, 3};
 int id;
 //Operaciones de provedor
 int ID_producto = 0; //Precio del producto
@@ -210,6 +211,7 @@ void menu_de_opciones(int usuario_provedor)
         read(fd, &ID_producto, sizeof(ID_producto));
         read(fd, &Descripcion, sizeof(Descripcion));
         close(fd);
+        
         switch (swichopc)
         {
         case 1:
@@ -281,6 +283,7 @@ void menu_de_opciones(int usuario_provedor)
             printf("\nUn cliente esta pagando y guardando su carro.\n");
             break;
         default:
+            printf("El cliente salio de la app.\n");
             break;
         }
     }
@@ -320,6 +323,8 @@ int validarContrasena(char conexion[], char contra[])
 
 void PIPE_CONEXION(int fd)
 {
+    int identificadorConexionUsuario;
+    int identificadorConexion;
     //Recepción de información del usuario
     //lectura de usuario
     fd = open("/tmp/mi_fifo", O_RDONLY);
@@ -333,10 +338,19 @@ void PIPE_CONEXION(int fd)
     close(fd);
 
     //Procesamiento y respuesta de la conexion
-    printf("\nValdando usuario\n");
-    int identificadorConexionUsuario = validar_usuario(Usuarioadm, usuario);
-    printf("\nValdando contra\n");
-    int identificadorConexion = validarContrasena(conexion, contra);
+    for (int i = 0; i < tam; i++)
+    {
+        printf("\nValdando usuario: %d\n", i);
+        identificadorConexionUsuario = validar_usuario(Usuarioadm, usuario[i]);
+        printf("\nValdando contra: %d\n", i);
+        identificadorConexion = validarContrasena(conexion, contra[i]);
+        printf("%d----%s", usuario[i], contra[i]);
+
+        if (identificadorConexion == 0 && identificadorConexionUsuario == 0)
+        {
+            break;
+        }
+    }
 
     if (identificadorConexion == 0 && identificadorConexionUsuario == 0)
     {
