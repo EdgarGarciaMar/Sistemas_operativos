@@ -126,7 +126,7 @@ void opcionesProvedor()
 {
     int opcionProveerdor;
     char descrip[10] = "NULL";
-    char nombre_productoala[10]="NULL";
+    char nombre_productoala[10] = "NULL";
 
     printf("+Selecciona 1 de las siguientes opciones:\n");
     printf("1: Busqueda de articulo\n");
@@ -253,8 +253,6 @@ void opcionesProvedor()
         swichopc = 4;
         IDproducto = 0;
 
-
-
         mkfifo("/tmp/mi_fifo", 0666);
 
         fd = open("/tmp/mi_fifo", O_WRONLY);
@@ -281,7 +279,8 @@ void opcionesCliente()
 
     printf("+Selecciona 1 de las siguientes opciones:\n");
     printf("1: Solicitar Carrito\n");
-    printf("2: Guaradr carrito\n");
+    printf("2: Guardar carrito\n");
+    printf("3: salir\n");
     scanf("%d", &opcionCliente);
     switch (opcionCliente)
     {
@@ -389,7 +388,19 @@ void opcionesCliente()
         close(fd);
         break;
     default:
+        swichopc = 3;
         printf("No seleccionaste ninguna opcion del menu, regresando a inicio...\n");
+        mkfifo("/tmp/mi_fifo", 0666);
+
+        fd = open("/tmp/mi_fifo", O_WRONLY);
+
+        write(fd, &swichopc, sizeof(int)); //opcion a ejecutar el server
+        write(fd, &nombre_carro, sizeof(nombre_carro));
+        write(fd, &nombre_producto, sizeof(nombre_producto));
+        write(fd, &IDproducto, sizeof(IDproducto));
+        write(fd, &Descripcion, sizeof(Descripcion));
+
+        close(fd);
         inicioSesion();
         break;
     }
